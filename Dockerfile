@@ -10,8 +10,8 @@ RUN apk add --no-cache git python3 make g++
 # Copia os arquivos de dependências
 COPY package.json package-lock.json* ./
 
-# Instala todas as dependências (incluindo devDependencies necessárias para o build)
-RUN NODE_OPTIONS="--max-old-space-size=4096" npm install --loglevel verbose
+# Instala todas as dependências (ignorando scripts de compilação C++ pesados)
+RUN npm install --ignore-scripts --no-fund --no-audit
 
 # Copia o restante do código-fonte
 COPY . .
