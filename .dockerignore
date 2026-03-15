@@ -1,0 +1,12 @@
+node_modules
+dist
+.env
+.git
+.github
+.easypanel.yaml
+.DS_Store
+*.log
+sessions/
+coverage/
+jest.config.js
+README.md
