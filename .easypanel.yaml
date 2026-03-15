@@ -1,0 +1,11 @@
+services:
+  - name: baileys-api
+    type: app
+    build:
+      - npm install
+      - npm run build
+    start: npm start
+    ports:
+      - 3000
+    volumes:
+      - ./sessions:/app/sessions

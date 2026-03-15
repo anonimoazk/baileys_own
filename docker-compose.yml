@@ -1,0 +1,69 @@
+version: '3.8'
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: baileys-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+  baileys-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: baileys-api
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./sessions:/app/sessions
+    depends_on:
+      - redis
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      - WEBHOOK_URL=http://your-app-url/webhooks/baileys
+      - WEBHOOK_SECRET=your-webhook-secret
+      - SESSION_PATH=./sessions
+      - LOG_LEVEL=warn
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_URL=redis://redis:6379
+
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'        # Máximo de 1 CPU
+          memory: 512M       # Máximo de 512MB de RAM
+        reservations:
+          cpus: '0.5'        # Reservar 0.5 CPU
+          memory: 256M       # Reservar 256MB de RAM
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        compress: "true"
+
+volumes:
+  redis-data:
