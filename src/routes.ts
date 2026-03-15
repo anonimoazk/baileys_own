@@ -10,6 +10,7 @@ import {
   getInstanceQR,
   sendMessage,
   deleteInstance,
+  disconnectInstance,
   listInstances,
   getProfilePicture,
   sendMediaMessage,
@@ -46,6 +47,7 @@ router.post('/instance/create', createInstanceLimiter, validate(createInstanceSc
 router.get('/instance/status/:instanceId', getInstanceStatus);
 router.get('/instance/qr/:instanceId', getInstanceQR);
 router.post('/instance/reconnect/:instanceId', reconnectInstance);
+router.post('/instance/disconnect/:instanceId', disconnectInstance);
 router.delete('/instance/delete/:instanceId', deleteInstance);
 router.get('/chat/profile-picture/:instanceId/:number', getProfilePicture);
 router.get('/instances', listInstances);

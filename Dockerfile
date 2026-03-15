@@ -19,6 +19,9 @@ COPY . .
 # Compila o código TypeScript para JavaScript
 RUN npm run build
 
+# Copia os arquivos estáticos do frontend para a pasta dist
+RUN cp -r src/public dist/public
+
 # Remove as dependências de desenvolvimento após o build
 RUN npm prune --production
 

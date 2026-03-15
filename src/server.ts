@@ -3,6 +3,8 @@ dotenv.config();
 
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import router from './routes.js';
 import { apiLimiter } from './middlewares/rateLimit.js';
 import { baileysManager } from './services/baileysManager.js';
@@ -12,6 +14,9 @@ import { logger } from './utils/logger.js';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './swagger.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
 app.set('trust proxy', 1);
 
@@ -20,6 +25,10 @@ const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
+
+// Serve static frontend files
+app.use(express.static(path.join(__dirname, 'public')));
+
 app.use('/api', apiLimiter);
 app.use('/api', router);
 

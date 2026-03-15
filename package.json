@@ -10,7 +10,7 @@
     "test:coverage": "jest --coverage",
     "start": "node dist/server.js",
     "dev": "tsx watch src/server.ts",
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && cp -r src/public dist/public",
     "lint": "eslint src/**/*.ts"
   },
   "keywords": [
