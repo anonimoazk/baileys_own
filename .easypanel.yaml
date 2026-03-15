@@ -1,10 +1,8 @@
 services:
   - name: baileys-api
     type: app
-    build:
-      - npm install
-      - npm run build
-    start: npm start
+    image: ""
+    dockerfile: Dockerfile
     ports:
       - 3000
     volumes:
