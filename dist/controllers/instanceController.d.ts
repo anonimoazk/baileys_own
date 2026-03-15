@@ -4,6 +4,7 @@ export declare const getInstanceStatus: (req: Request, res: Response) => Respons
 export declare const getInstanceQR: (req: Request, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
 export declare const sendMessage: (req: Request, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
 export declare const deleteInstance: (req: Request, res: Response) => Promise<void>;
+export declare const disconnectInstance: (req: Request, res: Response) => Promise<void>;
 export declare const sendMediaMessage: (req: Request, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
 export declare const getProfilePicture: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
 export declare const listInstances: (req: Request, res: Response) => void;

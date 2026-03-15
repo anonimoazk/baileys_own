@@ -98,6 +98,16 @@ export const deleteInstance = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+export const disconnectInstance = async (req, res) => {
+    const { instanceId } = req.params;
+    try {
+        await baileysManager.deleteInstance(instanceId, false); // logout=false preserves session
+        res.status(200).json({ success: true, message: 'Instância desconectada (sessão preservada)' });
+    }
+    catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
 export const sendMediaMessage = async (req, res) => {
     const { instanceId } = req.params;
     const { to, type, url, caption, fileName, mimetype } = req.body;

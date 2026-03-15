@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Baileys Manager — WhatsApp Instances</title>
+  <meta name="description" content="Gerencie múltiplas instâncias WhatsApp com Baileys. Crie, conecte e monitore suas conexões.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header" id="header">
+    <div class="header-left">
+      <div class="logo">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="16" fill="url(#logoGrad)"/>
+          <path d="M22.5 18.5c-.3-.2-1.8-.9-2.1-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-1 1.2-.2.2-.3.2-.6 0-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.2.1-.3.2-.5.1-.2 0-.3 0-.5s-.7-1.6-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.3-.3.3-1 1-1 2.4s1 2.8 1.2 3c.2.2 2 3.1 4.9 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.6-.7 1.9-1.3.2-.6.2-1.2.2-1.3 0-.1-.2-.2-.5-.3z" fill="white"/>
+          <defs>
+            <linearGradient id="logoGrad" x1="0" y1="0" x2="32" y2="32">
+              <stop stop-color="#25D366"/>
+              <stop offset="1" stop-color="#128C7E"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <h1>Baileys Manager</h1>
+      </div>
+      <span class="header-badge" id="instanceCount">0 instâncias</span>
+    </div>
+    <div class="header-right">
+      <div class="api-key-group">
+        <label for="apiKeyInput">API Key</label>
+        <input type="password" id="apiKeyInput" placeholder="Insira sua API Key" autocomplete="off">
+        <button class="btn-icon" id="toggleKeyVisibility" title="Mostrar/Ocultar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ VIEW: INSTANCE LIST ============ -->
+  <main class="main" id="listView">
+    <div class="action-bar">
+      <button class="btn-primary" id="createInstanceBtn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Gerar Nova Instância
+      </button>
+      <button class="btn-ghost" id="refreshBtn" title="Atualizar lista">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <polyline points="23 4 23 10 17 10"/>
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+          <line x1="8" y1="21" x2="16" y2="21"/>
+          <line x1="12" y1="17" x2="12" y2="21"/>
+        </svg>
+      </div>
+      <h2>Nenhuma instância criada</h2>
+      <p>Clique em "Gerar Nova Instância" para começar a conectar seus números WhatsApp.</p>
+    </div>
+
+    <!-- Instances Grid -->
+    <div class="instances-grid" id="instancesGrid"></div>
+  </main>
+
+  <!-- ============ VIEW: INSTANCE DETAIL ============ -->
+  <main class="main hidden" id="detailView">
+    <!-- Back Button -->
+    <button class="btn-back" id="backToList">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      Voltar para instâncias
+    </button>
+
+    <!-- Tabs -->
+    <div class="detail-tabs">
+      <button class="tab active" data-tab="data">Dados da instância</button>
+      <button class="tab" data-tab="webhooks">Webhooks e configurações</button>
+    </div>
+
+    <!-- Tab: Instance Data -->
+    <div class="detail-content" id="tabData">
+      <div class="detail-layout">
+        <!-- LEFT: Instance Info -->
+        <div class="detail-info">
+          <div class="detail-section">
+            <h2 class="detail-title" id="detailTitle">Dados da instância</h2>
+            <p class="detail-subtitle">Essas são suas informações para integração com esta instância, não compartilhe essas informações.</p>
+          </div>
+
+          <!-- Instance Name -->
+          <div class="info-field">
+            <label>Nome da instância</label>
+            <div class="info-value-box">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="field-icon">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+              <span id="detailName">—</span>
+            </div>
+          </div>
+
+          <!-- API URL -->
+          <div class="info-field">
+            <label>
+              API da instância
+              <button class="copy-btn" data-copy="detailApiUrl" title="Copiar">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+              </button>
+            </label>
+            <div class="info-value-box mono" id="detailApiUrl">—</div>
+          </div>
+
+          <!-- ID + Token Row -->
+          <div class="info-row">
+            <div class="info-field flex-1">
+              <label>
+                ID da instância
+                <button class="copy-btn" data-copy="detailId" title="Copiar">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                  </svg>
+                </button>
+              </label>
+              <div class="info-value-box mono" id="detailId">—</div>
+            </div>
+            <div class="info-field flex-1">
+              <label>
+                Token da instância
+                <button class="copy-btn" data-copy="detailToken" title="Copiar">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                  </svg>
+                </button>
+              </label>
+              <div class="info-value-box mono" id="detailToken">—</div>
+            </div>
+          </div>
+
+          <!-- Webhook Notice -->
+          <div class="notice-box" id="webhookNotice">
+            <div class="notice-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+            </div>
+            <div class="notice-content">
+              <strong>Webhook configurado</strong>
+              <span id="webhookUrlDisplay">—</span>
+            </div>
+          </div>
+
+          <!-- Status & Actions -->
+          <div class="detail-section">
+            <h3>Status da Conexão</h3>
+            <div class="status-row">
+              <span class="status-badge" id="detailStatus">
+                <span class="status-dot"></span>
+                Desconectado
+              </span>
+              <div class="status-actions" id="detailActions"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: QR Code Panel -->
+        <div class="qr-panel" id="qrPanel">
+          <h3>Leia o QRCode</h3>
+          <p>Abra o aplicativo do WhatsApp e leia o QRCode abaixo para conectar a esta instância.</p>
+          <div class="qr-display" id="qrDisplay">
+            <div class="qr-loading">
+              <div class="spinner"></div>
+              <span>Aguardando QR Code...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Webhooks -->
+    <div class="detail-content hidden" id="tabWebhooks">
+      <div class="detail-section">
+        <h2 class="detail-title">Webhooks e Configurações Gerais</h2>
+        <p class="detail-subtitle">Configure os webhooks para receber eventos desta instância.</p>
+      </div>
+
+      <div class="info-field">
+        <label>Webhook URL (global)</label>
+        <div class="info-value-box mono" id="webhookUrlConfig">—</div>
+        <span class="form-hint">Configurado via variável de ambiente WEBHOOK_URL no servidor.</span>
+      </div>
+
+      <div class="info-field">
+        <label>Eventos enviados</label>
+        <div class="events-list">
+          <span class="event-tag">connection.update</span>
+          <span class="event-tag">messages.upsert</span>
+        </div>
+      </div>
+
+      <div class="info-field">
+        <label>Endpoints disponíveis para esta instância</label>
+        <div class="endpoints-list" id="endpointsList"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Create Instance Modal -->
+  <div class="modal-overlay" id="createModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Nova Instância</h2>
+        <button class="btn-icon modal-close" id="closeModal">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="instanceIdInput">Nome da Instância</label>
+          <input type="text" id="instanceIdInput" placeholder="ex: meu-whatsapp-01" autocomplete="off">
+          <span class="form-hint">Use um identificador único para esta conexão WhatsApp.</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="cancelCreate">Cancelar</button>
+        <button class="btn-primary" id="confirmCreate">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          Criar Instância
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
